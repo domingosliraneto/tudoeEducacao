@@ -1,0 +1,219 @@
+Conectar / solicitações de dados
+
+------------------------------------------------------------------
+
+1) You need a Facebook App ID to use Facebook Javascript SDK,
+
+Check “Creating Facebook App” section in http://hayageek.com/facebook-dialog-oauth/
+
+2). Add a Channel file in your website. Channel file is optional but it improves the Facebook Javascript SDK performance by addressing cross-domain issues in certain browsers.
+
+content of channel file  is
+
+<script src="//connect.facebook.net/en_US/all.js"></script>
+
+------------------------------------------------------------------
+
+3) Facebook SDK initialization. Add the below code to your HTML file.
+
+<div id="fb-root"></div>
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : 'YOUR_APP_ID', // App ID
+      channelUrl : 'YOUR_WEBSITE_CHANNEL_URL',
+      status     : true, // check login status
+      cookie     : true, // enable cookies to allow the server to access the session
+      xfbml      : true  // parse XFBML
+    });
+    };
+ 
+  (function(d){
+     var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement('script'); js.id = id; js.async = true;
+     js.src = "//connect.facebook.net/en_US/all.js";
+     ref.parentNode.insertBefore(js, ref);
+   }(document));
+ 
+</script>
+
+------------------------------------------------------------------
+4) Write a Method for Login
+Use Fb.login() method for asking user authorization.If you want extra information from user, you need to provide the necessary scope list.
+
+for email :       –  {scope: ‘email’}
+for Friends List  –  {scope: ‘read_friendlists’}
+For Photos,Videos –  {scope: ‘user_photos,user_videos’}
+
+	
+function Login()
+    {
+ 
+        FB.login(function(response) {
+           if (response.authResponse) 
+           {
+                getUserInfo(); // Get User Information.
+ 
+            } else
+            {
+             console.log('Authorization failed.');
+            }
+         },{scope: 'email'});
+ 
+    }
+
+------------------------------------------------------------------
+
+5) Get User Information by making API call to Graph API
+
+	
+function getUserInfo() {
+       FB.api('/me', function(response) {
+ 
+        //response.name       - User Full name
+        //response.link       - User Facebook URL
+        //response.username   - User name
+        //response.id         - id
+        //response.email      - User email
+ 
+        });
+   }
+------------------------------------------------------------------
+
+6) Add callback handler for authResponseChange events. This is optional.
+
+FB.Event.subscribe('auth.authResponseChange', function(response) 
+{
+     if (response.status === 'connected') 
+     {
+        //SUCCESS
+     }   
+     else if (response.status === 'not_authorized') 
+    {
+        //FAILED
+    } else
+    {
+        //UNKNOWN ERROR. Logged Out
+    }
+});
+
+------------------------------------------------------------------
+
+6) Write a Method for Logout
+	
+function Logout()
+{
+    FB.logout(function(){document.location.reload();});
+ 
+}
+------------------------------------------------------------------
+Working Facebook Javascript SDK Example
+	
+<html>
+<body>
+<div id="fb-root"></div>
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '113455642165175', // Set YOUR APP ID
+      channelUrl : 'http://hayageek.com/examples/oauth/facebook/oauth-javascript/channel.html', // Channel File
+      status     : true, // check login status
+      cookie     : true, // enable cookies to allow the server to access the session
+      xfbml      : true  // parse XFBML
+    });
+ 
+    FB.Event.subscribe('auth.authResponseChange', function(response) 
+    {
+     if (response.status === 'connected') 
+    {
+        document.getElementById("message").innerHTML +=  "<br>Connected to Facebook";
+        //SUCCESS
+ 
+    }    
+    else if (response.status === 'not_authorized') 
+    {
+        document.getElementById("message").innerHTML +=  "<br>Failed to Connect";
+ 
+        //FAILED
+    } else 
+    {
+        document.getElementById("message").innerHTML +=  "<br>Logged Out";
+ 
+        //UNKNOWN ERROR
+    }
+    }); 
+ 
+    };
+ 
+    function Login()
+    {
+ 
+        FB.login(function(response) {
+           if (response.authResponse) 
+           {
+                getUserInfo();
+            } else 
+            {
+             console.log('User cancelled login or did not fully authorize.');
+            }
+         },{scope: 'email,user_photos,user_videos'});
+ 
+    }
+ 
+  function getUserInfo() {
+        FB.api('/me', function(response) {
+ 
+      var str="<b>Name</b> : "+response.name+"<br>";
+          str +="<b>Link: </b>"+response.link+"<br>";
+          str +="<b>Username:</b> "+response.username+"<br>";
+          str +="<b>id: </b>"+response.id+"<br>";
+          str +="<b>Email:</b> "+response.email+"<br>";
+          str +="<input type='button' value='Get Photo' onclick='getPhoto();'/>";
+          str +="<input type='button' value='Logout' onclick='Logout();'/>";
+          document.getElementById("status").innerHTML=str;
+ 
+    });
+    }
+    function getPhoto()
+    {
+      FB.api('/me/picture?type=normal', function(response) {
+ 
+          var str="<br/><b>Pic</b> : <img src='"+response.data.url+"'/>";
+          document.getElementById("status").innerHTML+=str;
+ 
+    });
+ 
+    }
+    function Logout()
+    {
+        FB.logout(function(){document.location.reload();});
+    }
+ 
+  // Load the SDK asynchronously
+  (function(d){
+     var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement('script'); js.id = id; js.async = true;
+     js.src = "//connect.facebook.net/en_US/all.js";
+     ref.parentNode.insertBefore(js, ref);
+   }(document));
+ 
+</script>
+<div align="center">
+<h2>Facebook OAuth Javascript Demo</h2>
+ 
+<div id="status">
+ Click on Below Image to start the demo: <br/>
+<img src="http://hayageek.com/examples/oauth/facebook/oauth-javascript/LoginWithFacebook.png" style="cursor:pointer;" onclick="Login()"/>
+</div>
+ 
+<br/><br/><br/><br/><br/>
+ 
+<div id="message">
+Logs:<br/>
+</div>
+ 
+</div>
+</body>
+</html>

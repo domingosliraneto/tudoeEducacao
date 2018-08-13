@@ -1,0 +1,5 @@
+.idea/
+public/bower.json
+public/bower_components/*
+sample.ini
+/vendor/

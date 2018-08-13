@@ -1,0 +1,9 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;   configuração inicial
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+host = "localhost"
+name = "tudoeeducacao"
+user = "root"
+pass = "root"
+type = "mysql"

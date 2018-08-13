@@ -1,0 +1,12 @@
+{
+    "autoload": {
+        "psr-4": {
+            "Lib\\Core\\": "lib/core",
+            "Lib\\Database\\": "lib/database",
+            "Lib\\Render\\": "lib/render",
+            "Lib\\GUI\\Base\\": "lib/gui/base",
+            "Lib\\Session\\": "lib/session",
+            "App\\": "app"
+        }
+    }
+}
